@@ -81,13 +81,82 @@ npm run check
 ```bash
 npm run test:unit
 ```
-Runs all 43 automated tests across both server (Node.js) and client (Playwright Chromium) environments.
+Runs all 46 automated tests across both server (Node.js) and client (Playwright Chromium) environments.
 
-### Production Build
+### Production Web Build
 ```bash
 npm run build
 npm run preview
 ```
+
+---
+
+## Desktop Application & Tauri Build
+
+JMT Visual Debug Tracer is packaged as a high-performance, lightweight native desktop application (~15 MB) powered by [Tauri v2](https://v2.tauri.app/) and `@sveltejs/adapter-static`.
+
+### 1. Prerequisites
+
+Before building the desktop application, install the native system toolchains:
+
+* **Rust Toolchain (All Platforms):**
+  Install Rust via [rustup.rs](https://rustup.rs) or run:
+  * **Windows (PowerShell):**
+    ```powershell
+    winget install --id Rustlang.Rustup -e
+    ```
+  * **macOS / Linux:**
+    ```bash
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    ```
+  *(Restart your terminal after installation so `cargo` and `rustc` are available on your `PATH`).*
+
+* **Platform C++ & Web Dependencies:**
+  * **Windows:** Microsoft Visual Studio C++ Build Tools (MSVC).
+  * **macOS:** Xcode Command Line Tools:
+    ```bash
+    xcode-select --install
+    ```
+  * **Linux (Debian/Ubuntu):**
+    ```bash
+    sudo apt update
+    sudo apt install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf build-essential curl
+    ```
+
+### 2. Desktop Development Mode
+
+Run the desktop application in a native window with live Hot Module Replacement (HMR):
+```bash
+npm run desktop:dev
+```
+*(Under the hood, this executes `tauri dev`, which starts Vite on port 1420 and attaches the native WebView window).*
+
+### 3. Building Desktop Installers
+
+To compile the production desktop application and bundle native installers:
+```bash
+npm run desktop:build
+```
+This command automatically:
+1. Builds the static production SvelteKit single-page app (`build/`).
+2. Invokes `cargo build --release` inside `src-tauri/`.
+3. Packages platform-specific installers into `src-tauri/target/release/bundle/`.
+
+### 4. Installer Output Locations
+
+* **Windows:**
+  * **NSIS Setup Installer:** `src-tauri/target/release/bundle/nsis/JMT Visual Debug Tracer_0.1.0_x64-setup.exe`
+  * **MSI Package:** `src-tauri/target/release/bundle/msi/JMT Visual Debug Tracer_0.1.0_x64_en-US.msi`
+* **macOS:**
+  * **DMG Disk Image:** `src-tauri/target/release/bundle/dmg/JMT Visual Debug Tracer_0.1.0_x64.dmg` (or Apple Silicon `.dmg`)
+  * **Application Bundle:** `src-tauri/target/release/bundle/macos/JMT Visual Debug Tracer.app`
+* **Linux:**
+  * **AppImage:** `src-tauri/target/release/bundle/appimage/jmt-visual-debug-tracer_0.1.0_amd64.AppImage`
+  * **Debian Package:** `src-tauri/target/release/bundle/deb/jmt-visual-debug-tracer_0.1.0_amd64.deb`
+
+### 5. Multiplatform CI/CD Pipeline
+
+A GitHub Actions workflow is provided in [`.github/workflows/desktop-release.yml`](./.github/workflows/desktop-release.yml). When a release tag is pushed (`git tag v0.1.0 && git push --tags`), it triggers automated parallel matrix builds across Windows, macOS (Intel & Apple Silicon), and Ubuntu Linux, attaching the compiled installer artifacts directly to the GitHub Release.
 
 ---
 

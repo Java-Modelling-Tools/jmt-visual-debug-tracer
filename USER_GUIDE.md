@@ -192,3 +192,44 @@ Yes. Drag-and-drop all `.ndjson.gz` files at once. The engine will detect common
 
 #### Q: How can I improve rendering performance on 500,000+ event traces?
 In the **Upload Modal**, select an ingestion cap of `50,000` or `100,000` events. This captures the active transient and steady-state behavior of the model while keeping browser frame rates locked at 60 fps.
+
+---
+
+## 12. Desktop Application & Multiplatform Installers (Tauri v2)
+
+JMT Visual Debug Tracer is packaged as a lightweight, cross-platform native desktop application powered by **Tauri v2** and `@sveltejs/adapter-static`.
+
+### Prerequisites for Building Native Desktop Installers
+
+1. **Rust Toolchain:**
+   - Install Rust via [rustup.rs](https://rustup.rs) or run in PowerShell:
+     ```powershell
+     winget install --id Rustlang.Rustup -e
+     ```
+2. **C++ Build Tools:**
+   - **Windows:** Microsoft Visual Studio C++ Build Tools (already installed on standard developer setups).
+   - **macOS:** Xcode Command Line Tools (`xcode-select --install`).
+   - **Linux:** WebKitGTK and build essentials (`sudo apt install libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf`).
+
+### Desktop Development & Build Commands
+
+| Command | Action | Output / Behavior |
+| :--- | :--- | :--- |
+| `npm run desktop:dev` | Launches native desktop window with live HMR | Runs Tauri debug app connected to `http://localhost:1420` |
+| `npm run desktop:build` | Compiles production native installer bundle | Generates lightweight (~12-15 MB) installer and standalone executable |
+
+### Output Artifacts
+
+* **Windows:**
+  * NSIS Installer: `src-tauri/target/release/bundle/nsis/JMT Visual Debug Tracer_0.1.0_x64-setup.exe`
+  * MSI Installer: `src-tauri/target/release/bundle/msi/JMT Visual Debug Tracer_0.1.0_x64_en-US.msi`
+* **macOS:**
+  * DMG Image: `src-tauri/target/release/bundle/dmg/JMT Visual Debug Tracer_0.1.0_x64.dmg` (or Apple Silicon `.dmg`)
+  * Application Bundle: `JMT Visual Debug Tracer.app`
+* **Linux:**
+  * AppImage: `src-tauri/target/release/bundle/appimage/jmt-visual-debug-tracer_0.1.0_amd64.AppImage`
+  * Debian Package: `src-tauri/target/release/bundle/deb/jmt-visual-debug-tracer_0.1.0_amd64.deb`
+
+### Automated Multiplatform CI/CD
+
+A GitHub Actions workflow is provided at `.github/workflows/desktop-release.yml`. When a Git tag is pushed (e.g., `git tag v0.1.0 && git push --tags`), the workflow automatically builds native binaries for Windows, macOS (Apple Silicon and Intel), and Linux, publishing the installers directly as GitHub Releases.

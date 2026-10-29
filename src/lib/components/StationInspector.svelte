@@ -80,12 +80,12 @@
 			<div class="section-header-flex">
 				<h3 class="card-title">SERVER CORES</h3>
 				<span class="server-count-badge">
-					{state?.servers.filter((s) => s.busy).length ?? 0} / {state?.totalServers ?? 1} Busy
+					{state?.servers?.filter((s) => s.busy).length ?? 0} / {state?.totalServers ?? 1} Busy
 				</span>
 			</div>
 
 			<div class="servers-grid">
-				{#if state}
+				{#if state && state.servers}
 					{#each state.servers as server (server.id)}
 						<div class="server-card {server.busy ? 'busy' : 'idle'}">
 							<div class="server-header">
@@ -116,10 +116,10 @@
 		<section class="card">
 			<div class="section-header-flex">
 				<h3 class="card-title">QUEUE RESIDENTS</h3>
-				<span class="count-pill">{state?.queueJobs.length ?? 0}</span>
+				<span class="count-pill">{state?.queueJobs?.length ?? 0}</span>
 			</div>
 
-			{#if state && state.queueJobs.length > 0}
+			{#if state && state.queueJobs && state.queueJobs.length > 0}
 				<div class="jobs-list">
 					{#each state.queueJobs as job (job.jobId)}
 						<div class="job-row">
@@ -166,9 +166,9 @@
 		<!-- Section: Recent Station Events -->
 		<section class="card">
 			<h3 class="card-title">RECENT STATION EVENTS</h3>
-			{#if state && state.recentEvents.length > 0}
+			{#if state && state.recentEvents && state.recentEvents.length > 0}
 				<div class="events-mini-list">
-					{#each state.recentEvents as ev (ev.eventId)}
+					{#each state.recentEvents as ev (ev.seq)}
 						{@const pStyle = getPhaseStyle(ev.phase)}
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<!-- svelte-ignore a11y_no_static_element_interactions -->

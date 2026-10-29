@@ -692,6 +692,20 @@ export class SimulationEngine {
 	}
 
 	addBreakpoint(bp: BreakpointConfig) {
+		// Prevent duplicate breakpoints by ID or target configuration
+		const existing = this.breakpoints.find(
+			(b) =>
+				b.id === bp.id ||
+				(b.type === bp.type &&
+					((b.jobIdTarget !== undefined && b.jobIdTarget === bp.jobIdTarget) ||
+						(b.stationTarget !== undefined && b.stationTarget === bp.stationTarget) ||
+						(b.queueThresholdPercent !== undefined &&
+							b.queueThresholdPercent === bp.queueThresholdPercent)))
+		);
+		if (existing) {
+			existing.enabled = true;
+			return;
+		}
 		this.breakpoints.push(bp);
 	}
 

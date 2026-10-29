@@ -15,6 +15,11 @@
 	let classInfo = $derived(
 		simEngine.metadata?.classes.find((c) => c.name === packet.jobClass)
 	);
+	let isJobBreakpointActive = $derived(
+		simEngine.breakpoints.some(
+			(b) => b.type === 'job_id' && b.jobIdTarget === packet.jobId && b.enabled
+		)
+	);
 </script>
 
 <aside class="packet-inspector">
@@ -98,20 +103,35 @@
 		<section class="card">
 			<h3 class="card-title">BREAKPOINT TRIGGER</h3>
 			<p class="bp-desc">Pause playback when Job #{packet.jobId} is scheduled or arrives:</p>
-			<button
-				class="btn-bp"
-				onclick={() => {
-					simEngine.addBreakpoint({
-						id: `bp-job-${packet.jobId}`,
-						enabled: true,
-						type: 'job_id',
-						label: `Pause on Job #${packet.jobId}`,
-						jobIdTarget: packet.jobId
-					});
-				}}
-			>
-				+ Break on Job #{packet.jobId}
-			</button>
+			{#if isJobBreakpointActive}
+				<button
+					class="btn-bp active"
+					onclick={() => {
+						const bp = simEngine.breakpoints.find(
+							(b) => b.type === 'job_id' && b.jobIdTarget === packet.jobId
+						);
+						if (bp) simEngine.removeBreakpoint(bp.id);
+					}}
+					title="Click to remove this breakpoint"
+				>
+					✓ Breakpoint Active (Click to Remove)
+				</button>
+			{:else}
+				<button
+					class="btn-bp"
+					onclick={() => {
+						simEngine.addBreakpoint({
+							id: `bp-job-${packet.jobId}`,
+							enabled: true,
+							type: 'job_id',
+							label: `Pause on Job #${packet.jobId}`,
+							jobIdTarget: packet.jobId
+						});
+					}}
+				>
+					+ Break on Job #{packet.jobId}
+				</button>
+			{/if}
 		</section>
 	</div>
 </aside>
@@ -311,5 +331,17 @@
 
 	.btn-bp:hover {
 		background: rgba(245, 158, 11, 0.2);
+	}
+
+	.btn-bp.active {
+		background: rgba(16, 185, 129, 0.15);
+		border-color: #10b981;
+		color: #10b981;
+	}
+
+	.btn-bp.active:hover {
+		background: rgba(239, 68, 68, 0.15);
+		border-color: #ef4444;
+		color: #ef4444;
 	}
 </style>

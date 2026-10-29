@@ -59,7 +59,7 @@
 
 			<!-- Active Breakpoints List -->
 			<div class="breakpoints-list">
-				{#each simEngine.breakpoints as bp (bp.id)}
+				{#each simEngine.breakpoints as bp, idx (`${bp.id}-${idx}`)}
 					<div class="bp-item {bp.enabled ? 'enabled' : 'disabled'}">
 						<label class="bp-toggle-label">
 							<input

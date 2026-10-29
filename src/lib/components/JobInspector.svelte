@@ -158,7 +158,7 @@
 				<div class="no-history">No events recorded yet for this job.</div>
 			{:else}
 				<div class="history-list">
-					{#each jobHistory as ev (ev.eventId)}
+					{#each jobHistory as ev (ev.seq)}
 						{@const pStyle = getPhaseStyle(ev.phase)}
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
